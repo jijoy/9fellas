@@ -1,1 +1,1 @@
-web: python vote.py
+web: python count.py
