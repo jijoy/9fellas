@@ -6,9 +6,9 @@
   <meta name="author" content="Matt Reider">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
-  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="static/css/normalize.css">
+  <link rel="stylesheet" href="static/css/skeleton.css">
+  <link rel="icon" type="static/images/png" href="images/favicon.png">
 
   <script type="text/javascript"
     src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
@@ -20,8 +20,7 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="one-half column" style="margin-top: 25%">
-
+      <div class="one-half column">
         <h1>Instance Party</h1>
         <div id="result">?</div>
       </div>
@@ -42,7 +41,7 @@
     var p = $(".caption");
     for(var i=0; i<3; i++) {
       p.animate({opacity: 0.2}, 1000, 'linear')
-       .animate({opacity: 1}, 1000, 'linear');
+      p.animate({opacity: 1}, 1000, 'linear');
     }
   });
   </script>

@@ -13,9 +13,9 @@ db = redis.StrictRedis(host=svc["hostname"], port=svc["port"], password=svc["pas
 @app.route('/register')
 def register():
     instance_id = os.getenv("CF_INSTANCE_INDEX")
-    db.sadd("instances",(instance_id))
+    db.sadd("instances",instance_id)
     mylist = db.smembers("instances")
-    return render_template('robots.html')
+    return render_template('robots.html', mylist=mylist)
 
 @app.route('/')
 def index():

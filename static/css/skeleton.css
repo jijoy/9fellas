@@ -154,27 +154,6 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; }
 p {
   margin-top: 0; }
 
-#robots {
-    margin: 0px auto;
-    display: inline-block;
-}
-
-#robots.item {
-    vertical-align: top;
-    display: inline-block;
-    text-align: center;
-    width: 120px;
-}
-#robots.item.img {
-    width: 100px;
-    height: 100px;
-    background-color: grey;
-}
-robots.item.caption {
-    display: block;
-}
-
-
 
 /* Links
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
