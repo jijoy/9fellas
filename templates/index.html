@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Instance Party!</title>
+  <meta name="description" content="These instances are gettin' down">
+  <meta name="author" content="Matt Reider">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <script type="text/javascript"
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript">
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
+
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="one-half column" style="margin-top: 25%">
+
+        <h1>Instance Party</h1>
+        <div id="result">?</div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    register();
+  });
+  function register(){
+    $.get( "/register", function( data ) {
+    $( "#result" ).html( data );
+  });
+  }
+  var t=setInterval(register,1000);
+
+  $(function() {
+    var p = $(".caption");
+    for(var i=0; i<3; i++) {
+      p.animate({opacity: 0.2}, 1000, 'linear')
+       .animate({opacity: 1}, 1000, 'linear');
+    }
+  });
+  </script>
+</body>
+</html>

@@ -1,1 +1,1 @@
-web: python count.py
+web: python instance-party.py
