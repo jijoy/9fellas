@@ -1,8 +1,14 @@
-<div style="margin: 0px auto;display: inline-block;width:800px">
+<div style="margin: 0px auto;text-align: center;">
+  <div style="vertical-align: bottom;display: inline-block;text-align: center;width:120px;margin-bottom:20px;margin-right:10px">
+    <img src="static/images/redis.png" width="50%" height="50%"/>
+  </div>
+</div>
+
+<div style="margin: 0px auto;text-align: center;">
 {% for instance in mylist %}
-<div style="vertical-align: top;display: inline-block;text-align: center;width:120px;margin-bottom:20px;margin-right:10px">
-  <img src="static/images/{{ instance }}a.png" width="50%" height="50%" style="background-color: grey;"/>
-  <span style="display: block;">Instance {{ instance }} </span>
+<div style="vertical-align: bottom;display: inline-block;text-align: center;width:120px;margin-bottom:20px;margin-right:10px">
+  <img src="static/images/{{ instance }}a.png" width="50%" height="50%"/>
+  <span style="display: block;">#{{ instance }} </span>
 </div>
 {% endfor %}
 </div>

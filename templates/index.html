@@ -12,38 +12,24 @@
 
   <script type="text/javascript"
     src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script type="text/javascript">
-    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-  </script>
 
 </head>
 <body>
   <div class="container">
     <div class="row">
-      <div class="one-half column">
-        <h1>Instance Party</h1>
+      <div class="twelve columns">
+        <h1 style="text-align:center; border-bottom: 1px solid #eee; padding: 30px 0;">Instance Party</h1>
         <div id="result">?</div>
       </div>
     </div>
   </div>
   <script type="text/javascript">
-  $(document).ready(function() {
-    register();
-  });
   function register(){
     $.get( "/register", function( data ) {
-    $( "#result" ).html( data );
-  });
+      $( "#result" ).html( data );
+    });
   }
   var t=setInterval(register,1000);
-
-  $(function() {
-    var p = $(".caption");
-    for(var i=0; i<3; i++) {
-      p.animate({opacity: 0.2}, 1000, 'linear')
-      p.animate({opacity: 1}, 1000, 'linear');
-    }
-  });
   </script>
 </body>
 </html>
