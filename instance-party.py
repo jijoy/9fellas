@@ -25,7 +25,9 @@ class Producer(Thread):
         while True :
             try:
                 instance_id = os.getenv("CF_INSTANCE_INDEX")
-                self.queue.put(instance_id)
+                count = int(db.hget("party",instance_id))
+                if count < 1 :
+                    self.queue.put(instance_id)
             except :
                 pass
             finally:
@@ -39,17 +41,18 @@ class Consumer(Thread):
         while True :
             try :
                 instance_id = self.queue.get()
-                db.hset("party",instance_id,time.time())
+                
+                db.hset("party",instance_id,1)
             except:
                 pass
             finally:
                 pass
             
-def heartbeat():
-    while True:
-        instance_id = os.getenv("CF_INSTANCE_INDEX")
-        db.hset("party",instance_id,time.time())
-        sleep(0.5)
+# def heartbeat():
+#     while True:
+#         instance_id = os.getenv("CF_INSTANCE_INDEX")
+#         db.hset("party",instance_id,time.time())
+#         sleep(0.5)
         
 def init_workers():
     party_queue = Queue()
@@ -60,14 +63,36 @@ def init_workers():
     p.start()
     c.start()
 
+@app.route('/addthread')
+def addthread():
+    instance_id = os.getenv("CF_INSTANCE_INDEX")
+    print 'Instance Id ****************%s'%instance_id
+    thread_count = int(db.hget("party",instance_id))
+    thread_count+=1
+    print 'Threadcount ****************%s'%thread_count
+    result = db.hset("party",str(instance_id),str(thread_count))
+    print 'HSET result %s'%result
+    print db.hgetall("party")
+    return json.dumps({'message':'success'})
+@app.route('/deletethread')
+def deletethread():
+    instance_id = os.getenv("CF_INSTANCE_INDEX") 
+    print 'Instance Id **************%s'%instance_id
+    thread_count = int(db.hget("party",instance_id))
+    thread_count-=1
+    db.hset("party",instance_id,thread_count)
+    
+    return json.dumps({'message':'success'})
+
 @app.route('/register')
 def register():
     mydict = db.hgetall("party")
+    print mydict
     mylist = []
-    for k in mydict:
-        if float(mydict[k]) > (time.time() - 1):
-            mylist.append(k)
-    return render_template('robots.html', mylist=mylist)
+#     for k in mydict:
+#         if float(mydict[k]) > (time.time() - 1):
+#             mylist.append(k)
+    return render_template('robots.html', mydict=mydict)
 
 @app.route('/')
 def index():

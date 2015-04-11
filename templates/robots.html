@@ -5,10 +5,16 @@
 </div>
 
 <div style="margin: 0px auto;text-align: center;">
-{% for instance in mylist %}
-<div style="vertical-align: bottom;display: inline-block;text-align: center;width:120px;margin-bottom:20px;margin-right:10px">
-  <img src="static/images/{{ instance }}a.png" width="50%" height="50%"/>
-  <span style="display: block;">#{{ instance }} </span>
-</div>
+{% for instance,threads in mydict.iteritems() %}
+<div style="width:120px;margin-bottom:20px;margin-right:10px">
+	<div style="width:120px"><b>Instance - #{{instance}}</h5></div>
+	{% for i in range(0,threads|int) %}
+	<div style="float: left;display: inline-block;text-align: center;width:120px;margin-bottom:20px;margin-right:10px">
+	  <img src="static/images/{{ i }}a.png" width="50%" height="50%"/>
+	  <span style="display: block;">#{{ i }} </span>
+	</div>
+	{% endfor %}
+
+
 {% endfor %}
 </div>
