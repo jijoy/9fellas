@@ -25,8 +25,8 @@ class Producer(Thread):
         while True :
             try:
                 instance_id = os.getenv("CF_INSTANCE_INDEX")
-                count = int(db.hget("party",instance_id))
-                if count < 1 :
+                mydict = db.hgetall("party")
+                if instance_id not in mydict :
                     self.queue.put(instance_id)
             except :
                 pass
