@@ -5,9 +5,9 @@
 </div>
 
 <div style="margin: 0px auto;text-align: center;">
-<table><tr>
+<table>
 {% for appname,instances in appdicts.iteritems() %}
-	<td>	
+	<tr><td>	
 			<b>Application - {{appname}}</b>
 			{% for instance,threads in instances.iteritems() %}
 				<div style="margin-bottom:20px;margin-right:10px;">
@@ -28,7 +28,7 @@
 					</div>
 				</div>
 			{% endfor %}			
-	</td>
+	</tr></td>
 {% endfor %}
-<tr></table>
+</table>
 </div>
