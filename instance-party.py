@@ -15,7 +15,7 @@ svc = vcap['rediscloud'][0]['credentials']
 
 db = redis.StrictRedis(host=svc["hostname"], port=svc["port"], password=svc["password"],db=0)
 
-
+application_name = json.loads(os.environ['VCAP_APPLICATION'])['application_name']
 
 class Producer(Thread):
     def __init__(self,queue):
@@ -25,7 +25,7 @@ class Producer(Thread):
         while True :
             try:
                 instance_id = os.getenv("CF_INSTANCE_INDEX")
-                mydict = db.hgetall("party")
+                mydict = db.hgetall(application_name)
                 if instance_id not in mydict :
                     self.queue.put(instance_id)
             except :
@@ -41,17 +41,11 @@ class Consumer(Thread):
         while True :
             try :
                 instance_id = self.queue.get()
-                db.hset("party",instance_id,1)
+                db.hset(application_name,instance_id,1)
             except:
                 pass
             finally:
                 pass
-            
-# def heartbeat():
-#     while True:
-#         instance_id = os.getenv("CF_INSTANCE_INDEX")
-#         db.hset("party",instance_id,time.time())
-#         sleep(0.5)
         
 def init_workers():
     party_queue = Queue()
@@ -66,39 +60,56 @@ def init_workers():
 def addthread():
     instance_id = os.getenv("CF_INSTANCE_INDEX")
     print 'Instance Id ****************%s'%instance_id
-    thread_count = int(db.hget("party",instance_id))
+    thread_count = int(db.hget(application_name,instance_id))
     thread_count+=1
     print 'Threadcount ****************%s'%thread_count
-    result = db.hset("party",str(instance_id),str(thread_count))
+    result = db.hset(application_name,str(instance_id),str(thread_count))
     print 'HSET result %s'%result
-    print db.hgetall("party")
+    print db.hgetall(application_name)
     return json.dumps({'message':'success'})
 @app.route('/deletethread')
 def deletethread():
     instance_id = os.getenv("CF_INSTANCE_INDEX") 
     print 'Instance Id **************%s'%instance_id
-    thread_count = int(db.hget("party",instance_id))
+    thread_count = int(db.hget(application_name,instance_id))
     thread_count-=1
-    db.hset("party",instance_id,thread_count)
+    db.hset(application_name,instance_id,thread_count)
     
     return json.dumps({'message':'success'})
 
 @app.route('/register')
 def register():
-    mydict = db.hgetall("party")
-    print mydict
+    db.hset('applications',application_name,1)
+#     print mydict
+    return json.dumps({'message':'success'})
+
+
+@app.route('/instances')
+def instances():
+    mydict = db.hgetall(application_name)
+#     print mydict
     mylist = []
-#     for k in mydict:
-#         if float(mydict[k]) > (time.time() - 1):
-#             mylist.append(k)
     return render_template('robots.html', mydict=mydict)
+
+@app.route('/applications')
+def applications():
+    return render_template('applications.html')
+
+@app.route('/applicationsdetails')
+def applicationsdetails():
+    appdicts = db.hgetall('applications')
+    finaldict = {}
+    for appname,value in appdicts.iteritems():
+        finaldict.__setitem__(appname,db.hgetall(appname))
+#     print mydict
+    mylist = []
+    return render_template('app-robots.html', appdicts=finaldict)
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 if __name__ == "__main__":
-#     t = threading.Thread(target=heartbeat)
-#     t.start()
     init_workers()
     app.run(host='0.0.0.0', port=port, debug=True)
