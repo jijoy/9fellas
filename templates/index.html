@@ -26,10 +26,12 @@
   <script type="text/javascript">
   function register(){
     $.get( "/register", function( data ) {
+      $( "#result" ).empty();
       $( "#result" ).html( data );
     });
   }
   var t=setInterval(register,1000);
+  
   </script>
 </body>
 </html>

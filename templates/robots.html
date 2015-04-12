@@ -6,15 +6,22 @@
 
 <div style="margin: 0px auto;text-align: center;">
 {% for instance,threads in mydict.iteritems() %}
-<div style="width:120px;margin-bottom:20px;margin-right:10px">
-	<div style="width:120px"><b>Instance - #{{instance}}</h5></div>
-	{% for i in range(0,threads|int) %}
-	<div style="float: left;display: inline-block;text-align: center;width:120px;margin-bottom:20px;margin-right:10px">
-	  <img src="static/images/{{ i }}a.png" width="50%" height="50%"/>
-	  <span style="display: block;">#{{ i }} </span>
+	<div style="margin-bottom:20px;margin-right:10px;">
+		<div width="100%;">
+			<b>Instance - #{{instance}}</b>
+		</div>
+		<div width="100%;">
+			<table>
+				<tr>
+				{% for i in range(0,threads|int) %}
+				  <td>
+					  <img src="static/images/{{ i }}a.png" width="25%" height="25%"/>
+					  <span style="">#{{ [0,1,2,3,4,5,6,7,8]|random }} </span>
+				  </td>
+				{% endfor %}
+				</tr>
+			</table>
+		</div>
 	</div>
-	{% endfor %}
-
-
 {% endfor %}
 </div>

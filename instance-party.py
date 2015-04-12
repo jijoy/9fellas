@@ -41,7 +41,6 @@ class Consumer(Thread):
         while True :
             try :
                 instance_id = self.queue.get()
-                
                 db.hset("party",instance_id,1)
             except:
                 pass
