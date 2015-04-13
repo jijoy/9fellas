@@ -5,6 +5,7 @@ import time
 from time import sleep
 from flask import Flask, json, render_template, request
 import redis
+from collections import OrderedDict
 
 from Queue import Queue
 
@@ -87,9 +88,12 @@ def register():
 @app.route('/instances')
 def instances():
     mydict = db.hgetall(application_name)
+    ordered = OrderedDict()
+    for key in sorted(mydict):
+        ordered.__setitem__(key,mydict.get(key))
 #     print mydict
     mylist = []
-    return render_template('robots.html', mydict=mydict)
+    return render_template('robots.html', mydict=ordered)
 
 @app.route('/applications')
 def applications():
@@ -98,8 +102,8 @@ def applications():
 @app.route('/applicationsdetails')
 def applicationsdetails():
     appdicts = db.hgetall('applications')
-    finaldict = {}
-    for appname,value in appdicts.iteritems():
+    finaldict = OrderedDict()
+    for appname in sorted(appdicts):
         finaldict.__setitem__(appname,db.hgetall(appname))
 #     print mydict
     mylist = []
