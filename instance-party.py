@@ -60,9 +60,12 @@ class MasterUpdater(Thread):
         while True :
             try:
                 appinfo = self.db.hgetall(self.appname)
-                data = {'applicationname':self.appname,'appinfo':appinfo}
+                appinfo_str = json.dumps(appinfo)
+#                 print appinfo
+                data = {'applicationname':self.appname,'appinfo':appinfo_str}
                 response = requests.post(REGISTRAR_URL, data=data)
-                time.sleep(2000)
+#                 print response
+                time.sleep(2)
             except :
                 pass
 def init_workers():
