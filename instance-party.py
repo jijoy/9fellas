@@ -6,8 +6,11 @@ from time import sleep
 from flask import Flask, json, render_template, request
 import redis
 from collections import OrderedDict
+import requests
 
 from Queue import Queue
+
+REGISTRAR_URL = 'http://cuteparty-registrar1.cfapps.io/update'
 
 app = Flask(__name__)
 port = int(os.getenv("PORT"))
@@ -48,14 +51,32 @@ class Consumer(Thread):
             finally:
                 pass
         
+class MasterUpdater(Thread):
+    def __init__(self,db,appname):
+        Thread.__init__(self)
+        self.db = db
+        self.appname = appname
+    def run(self):
+        while True :
+            try:
+                appinfo = self.db.hgetall(self.appname)
+                data = {'applicationname':self.appname,'appinfo':appinfo}
+                response = requests.post(REGISTRAR_URL, data=data)
+                time.sleep(2000)
+            except :
+                pass
 def init_workers():
     party_queue = Queue()
     p = Producer(party_queue)
     p.daemon = True
     c = Consumer(party_queue)
     c.deamon= True
+    m = MasterUpdater(db,application_name)
+    m.deamon = True
     p.start()
     c.start()
+    m.start()
+    
 
 @app.route('/addthread')
 def addthread():
@@ -94,20 +115,6 @@ def instances():
 #     print mydict
     mylist = []
     return render_template('robots.html', mydict=ordered)
-
-@app.route('/applications')
-def applications():
-    return render_template('applications.html')
-
-@app.route('/applicationsdetails')
-def applicationsdetails():
-    appdicts = db.hgetall('applications')
-    finaldict = OrderedDict()
-    for appname in sorted(appdicts):
-        finaldict.__setitem__(appname,db.hgetall(appname))
-#     print mydict
-    mylist = []
-    return render_template('app-robots.html', appdicts=finaldict)
 
 
 @app.route('/')
