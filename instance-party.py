@@ -22,10 +22,19 @@ db = redis.StrictRedis(host=svc["hostname"], port=svc["port"], password=svc["pas
 application_name = json.loads(os.environ['VCAP_APPLICATION'])['application_name']
 
 class Producer(Thread):
+    """
+    Background thread for fetching instance info
+    """
     def __init__(self,queue):
+        """
+        Constructor 
+        """
         Thread.__init__(self)
         self.queue = queue 
     def run(self):
+        """
+        This is the run implementation of the background thread , which fetchs the instaces info.
+        """
         while True :
             try:
                 instance_id = os.getenv("CF_INSTANCE_INDEX")
@@ -37,11 +46,20 @@ class Producer(Thread):
             finally:
                 pass
 class Consumer(Thread):
+    """
+    Backgrdound thread for fetching from Queue and updating redis
+    """
     def __init__(self,queue):
+        """
+        Constrcutor
+        """
         Thread.__init__(self)
         self.queue = queue
     
     def run(self):
+        """
+        Run method for background thread which updates redis
+        """
         while True :
             try :
                 instance_id = self.queue.get()
@@ -52,23 +70,38 @@ class Consumer(Thread):
                 pass
         
 class MasterUpdater(Thread):
+    """
+    This background thread will update the aggregator/registrar app at provided url
+    """
     def __init__(self,db,appname):
+        """
+        Constructor
+        """
         Thread.__init__(self)
         self.db = db
         self.appname = appname
     def run(self):
+        """
+        Run implementation of background thread which updates the aggregator
+        """
         while True :
             try:
                 appinfo = self.db.hgetall(self.appname)
                 appinfo_str = json.dumps(appinfo)
-#                 print appinfo
                 data = {'applicationname':self.appname,'appinfo':appinfo_str}
                 response = requests.post(REGISTRAR_URL, data=data)
-#                 print response
                 time.sleep(2)
             except :
                 pass
 def init_workers():
+    """
+    This method is for starting all worker threads.
+    We are using three workers right now .
+    1. One for fetching latest instances info and adds to Queue
+    2. One for fetching from Queue and updating Redis
+    3. For updating the aggregator app , about this applications info.
+    All are deamon threads.
+    """
     party_queue = Queue()
     p = Producer(party_queue)
     p.daemon = True
@@ -83,6 +116,10 @@ def init_workers():
 
 @app.route('/addthread')
 def addthread():
+    """
+        This endpoint is for adding threads to the application.
+        Loadbalancer decids to go for which instances and based on that thread is added to it. 
+    """
     instance_id = os.getenv("CF_INSTANCE_INDEX")
     print 'Instance Id ****************%s'%instance_id
     thread_count = int(db.hget(application_name,instance_id))
@@ -94,6 +131,10 @@ def addthread():
     return json.dumps({'message':'success'})
 @app.route('/deletethread')
 def deletethread():
+    """
+        This endpoint is for deleting threads to the application.
+        Loadbalancer decids to go for which instances and based on that thread is deleted from it. 
+    """
     instance_id = os.getenv("CF_INSTANCE_INDEX") 
     print 'Instance Id **************%s'%instance_id
     thread_count = int(db.hget(application_name,instance_id))
@@ -102,26 +143,26 @@ def deletethread():
     
     return json.dumps({'message':'success'})
 
-@app.route('/register')
-def register():
-    db.hset('applications',application_name,1)
-#     print mydict
-    return json.dumps({'message':'success'})
-
 
 @app.route('/instances')
 def instances():
+    """
+        This will list out all the instances and threads per application.
+        An application can see only it's threads and instances. 
+    """
     mydict = db.hgetall(application_name)
     ordered = OrderedDict()
     for key in sorted(mydict):
         ordered.__setitem__(key,mydict.get(key))
-#     print mydict
     mylist = []
     return render_template('robots.html', mydict=ordered)
 
 
 @app.route('/')
 def index():
+    """
+    Main entry point
+    """
     return render_template('index.html')
 
 if __name__ == "__main__":
